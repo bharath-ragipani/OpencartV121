@@ -109,6 +109,17 @@
     <version>5.1.2</version>
 </dependency>
 
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>3.11.0.2619</version>
+        </plugin>
+    </plugins>
+</build>
+
+    
 <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-email -->
 <dependency>
     <groupId>org.apache.commons</groupId>
