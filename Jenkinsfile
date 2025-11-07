@@ -5,7 +5,8 @@ pipeline {
         SONAR_TOKEN = 'sqp_1991cf1af85d111cd8cce4d8ddbd21f4053fbdb8'
         SONAR_PROJECT_KEY = 'open-cart-app'
         SONAR_PROJECT_NAME = 'open-cart app'
-        SONAR_HOST_URL = 'http://your-sonarqube-server:9000' // replace with your SonarQube URL
+       SONAR_HOST_URL = 'http://localhost:9000'
+
     }
 
     stages {
