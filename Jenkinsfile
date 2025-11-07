@@ -37,15 +37,22 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                echo "Running SonarQube analysis..."
-                withEnv(["SONAR_TOKEN=${SONAR_TOKEN}"]) {
-                    bat "mvn sonar:sonar -Dsonar.projectKey=OpencartV121 -Dsonar.host.url=http://localhost:9000 -Dsonar.login=%SONAR_TOKEN%"
-                }
-            }
+       stage('SonarQube Analysis') {
+    steps {
+        echo 'Running SonarQube analysis...'
+        withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+            bat """
+            mvn sonar:sonar ^
+            -Dsonar.projectKey=open-cart-app ^
+            -Dsonar.projectName="open-cart app" ^
+            -Dsonar.host.url=%SONAR_HOST_URL% ^
+            -Dsonar.login=%SONAR_TOKEN% ^
+            -Dsonar.sources=src/test/java
+            """
         }
     }
+}
+
 
     post {
         success {
