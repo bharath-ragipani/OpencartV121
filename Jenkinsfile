@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        // Set Java and Maven paths if needed (update to your local installation paths)
         JAVA_HOME = 'C:\\Program Files\\java21\\jdk-21.0.9'
         MAVEN_HOME = 'C:\\apache-maven-3.9.3'
         PATH = "${env.JAVA_HOME}\\bin;${env.MAVEN_HOME}\\bin;${env.PATH}"
+        SONAR_TOKEN = credentials('sonar-token') // Add your SonarQube token in Jenkins credentials
     }
 
     stages {
@@ -19,15 +19,27 @@ pipeline {
         stage('Build & Test') {
             steps {
                 echo 'Running Maven clean and test...'
-                // Run your TestNG tests via Maven
                 bat 'mvn clean test'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube scan...'
+                bat """
+                    mvn sonar:sonar ^
+                    -Dsonar.projectKey=OpencartV121 ^
+                    -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.login=${env.SONAR_TOKEN} ^
+                    -Dsonar.junit.reportPaths=target/surefire-reports ^
+                    -Dsonar.java.binaries=target/classes
+                """
             }
         }
 
         stage('Archive Reports') {
             steps {
-                echo 'Archiving TestNG and other reports...'
-                // Archive test reports
+                echo 'Archiving TestNG reports...'
                 archiveArtifacts artifacts: 'test-output/**/*.html', fingerprint: true
                 archiveArtifacts artifacts: 'test-output/**/*.xml', fingerprint: true
             }
@@ -35,7 +47,7 @@ pipeline {
 
         stage('Package') {
             steps {
-                echo 'Packaging project (optional if needed)...'
+                echo 'Packaging project...'
                 bat 'mvn clean package'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
@@ -44,7 +56,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build & Test completed successfully!'
+            echo 'Build, Test & SonarQube Analysis completed successfully!'
         }
         failure {
             echo 'Build failed! Check logs for details.'
